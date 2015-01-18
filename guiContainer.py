@@ -5,6 +5,7 @@ from obspy.core import UTCDateTime, Stream
 
 import pyqtgraph as pg
 
+import os
 
 class Channel(object):
     '''
@@ -138,14 +139,18 @@ class Station(object):
         '''
         Sets wheather the station is visible in the plot view
         '''
+        basedir = os.path.dirname(__file__)
+
         self.visible = visible
         if visible:
             self._qTreeStationItem.setIcon(0,
-                                           QIcon('./icons/eye-24.png'))
+                                           QIcon(os.path.join(basedir,
+                                                 'icons/eye-24.png')))
             self.initPlot()
         else:
             self._qTreeStationItem.setIcon(0,
-                                           QIcon('./icons/eye-hidden-24.png'))
+                                           QIcon(os.path.join(basedir,
+                                                 'icons/eye-hidden-24.png')))
             self.delPlot()
 
     def initPlot(self):

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BandFilt</class>
+ <widget class="QGroupBox" name="BandFilt">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>303</width>
+    <height>97</height>
+   </rect>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
+  </property>
+  <property name="windowTitle">
+   <string>Bandpass Filter</string>
+  </property>
+  <property name="title">
+   <string>Bandpass Filter</string>
+  </property>
+  <widget class="QDoubleSpinBox" name="fminSpin">
+   <property name="geometry">
+    <rect>
+     <x>136</x>
+     <y>33</y>
+     <width>71</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="suffix">
+    <string/>
+   </property>
+   <property name="maximum">
+    <double>50.000000000000000</double>
+   </property>
+   <property name="singleStep">
+    <double>0.100000000000000</double>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="fmaxSpin">
+   <property name="geometry">
+    <rect>
+     <x>226</x>
+     <y>34</y>
+     <width>71</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="suffix">
+    <string extracomment="Hz"/>
+   </property>
+   <property name="value">
+    <double>50.000000000000000</double>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_1">
+   <property name="geometry">
+    <rect>
+     <x>146</x>
+     <y>5</y>
+     <width>55</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Min. Hz</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>236</x>
+     <y>5</y>
+     <width>55</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Max. Hz</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>4</x>
+     <y>28</y>
+     <width>121</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Filter On/Off</string>
+   </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QxtSpanSlider" name="spanFilter">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>136</x>
+     <y>60</y>
+     <width>161</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="maximum">
+    <number>1000</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="tickPosition">
+    <enum>QSlider::TicksBelow</enum>
+   </property>
+   <property name="tickInterval">
+    <number>100</number>
+   </property>
+   <property name="upperValue">
+    <number>500</number>
+   </property>
+   <property name="upperPosition">
+    <number>500</number>
+   </property>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QxtSpanSlider</class>
+   <extends>QSlider</extends>
+   <header>QxtSpanSlider</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>pushButton</tabstop>
+  <tabstop>fminSpin</tabstop>
+  <tabstop>fmaxSpin</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

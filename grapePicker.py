@@ -2,7 +2,6 @@ import sys
 from PySide.QtGui import *
 from PySide.QtCore import *
 
-import loadSGS as sgs
 from guiContainer import *
 import mainWindow
 
@@ -65,8 +64,6 @@ class grapePicker(mainWindow.Ui_MainWindow, QMainWindow):
         for i, sta in enumerate(self.stations):
             if i < self.nplots:
                 sta.setVisible(True)
-
-        print 'HERE!'
         # Executing Qt
         self.show()
         app.exec_()
@@ -264,6 +261,3 @@ class grapePicker(mainWindow.Ui_MainWindow, QMainWindow):
         for station in self.stations:
             if station.visible:
                 station.updateTraceFilter()
-        print self.filterArgs
-
-grapePicker(stream=sgs.events[1].Stream())

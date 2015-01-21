@@ -85,6 +85,9 @@ class grapePicker(mainWindow.Ui_MainWindow, QMainWindow):
         self.stationTree.setExpandsOnDoubleClick(False)
         self.stationTree.itemDoubleClicked.connect(self._changeStationVisibility)
 
+        self.stationTree.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.stationTree.customContextMenuRequested.connect(self.stations.showSortQMenu)
+
     def _connectStationButtons(self):
         '''
         Setup Station Buttons - Select visible channel
@@ -112,13 +115,23 @@ class grapePicker(mainWindow.Ui_MainWindow, QMainWindow):
             if station.visible:
                 station.plotSelectedChannel()
 
+    '''
+    Event Tree Frunctions
+    '''
     def _initEventTree(self):
         '''
         Init the event tree :QTreeWidgetItem:
         '''
         self.eventTree.setColumnCount(2)
         self.eventTree.setColumnWidth(0, 80)
+        self.eventTree.itemDoubleClicked.connect(self._highlightPick)
         #self.eventTree.itemClicked.connect()
+
+    def _highlightPick(self):
+        picks = self.events.getAllPicks()
+        for pick in picks:
+            if pick._QTreePickItem.isSelected():
+                pick.highlightPickLineItem()
 
     def _connectFileMenu(self):
         '''

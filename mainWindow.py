@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Sun Jan 18 14:50:56 2015
+# Created: Wed Jan 21 16:40:23 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -89,7 +89,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.toolBox.sizePolicy().hasHeightForWidth())
         self.toolBox.setSizePolicy(sizePolicy)
-        self.toolBox.setMinimumSize(QtCore.QSize(256, 390))
+        self.toolBox.setMinimumSize(QtCore.QSize(260, 390))
         self.toolBox.setFrameShape(QtGui.QFrame.HLine)
         self.toolBox.setFrameShadow(QtGui.QFrame.Raised)
         self.toolBox.setObjectName("toolBox")
@@ -297,12 +297,18 @@ class Ui_MainWindow(object):
         MainWindow.setTabOrder(self.zerophaseCheck, self.filterButton)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Grape Picker", None, QtGui.QApplication.UnicodeUTF8))
+        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "GrapePicker", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setTitle(QtGui.QApplication.translate("MainWindow", "Component View", None, QtGui.QApplication.UnicodeUTF8))
+        self.compZbtn.setToolTip(QtGui.QApplication.translate("MainWindow", "Shortcut Z Trace: 1", None, QtGui.QApplication.UnicodeUTF8))
+        self.compZbtn.setStatusTip(QtGui.QApplication.translate("MainWindow", "Shortcut Z Trace: 1", None, QtGui.QApplication.UnicodeUTF8))
         self.compZbtn.setText(QtGui.QApplication.translate("MainWindow", "Z", None, QtGui.QApplication.UnicodeUTF8))
         self.compZbtn.setShortcut(QtGui.QApplication.translate("MainWindow", "1", None, QtGui.QApplication.UnicodeUTF8))
+        self.compNbtn.setToolTip(QtGui.QApplication.translate("MainWindow", "Shortcut N Trace: 2", None, QtGui.QApplication.UnicodeUTF8))
+        self.compNbtn.setStatusTip(QtGui.QApplication.translate("MainWindow", "Shortcut N Trace: 2", None, QtGui.QApplication.UnicodeUTF8))
         self.compNbtn.setText(QtGui.QApplication.translate("MainWindow", "N", None, QtGui.QApplication.UnicodeUTF8))
         self.compNbtn.setShortcut(QtGui.QApplication.translate("MainWindow", "2", None, QtGui.QApplication.UnicodeUTF8))
+        self.compEbtn.setToolTip(QtGui.QApplication.translate("MainWindow", "Shortcut E Trace: 3", None, QtGui.QApplication.UnicodeUTF8))
+        self.compEbtn.setStatusTip(QtGui.QApplication.translate("MainWindow", "Shortcut E Trace: 3", None, QtGui.QApplication.UnicodeUTF8))
         self.compEbtn.setText(QtGui.QApplication.translate("MainWindow", "E", None, QtGui.QApplication.UnicodeUTF8))
         self.compEbtn.setShortcut(QtGui.QApplication.translate("MainWindow", "3", None, QtGui.QApplication.UnicodeUTF8))
         self.pickGroup.setTitle(QtGui.QApplication.translate("MainWindow", "Active Picker", None, QtGui.QApplication.UnicodeUTF8))

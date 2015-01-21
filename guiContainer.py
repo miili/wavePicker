@@ -1,7 +1,7 @@
 from PySide.QtGui import *
 from PySide.QtCore import *
 
-from obspy.core import UTCDateTime, Stream
+from obspy.core import UTCDateTime, Stream, AttribDict
 
 import pyqtgraph as pg
 
@@ -58,7 +58,7 @@ class Channel(object):
         _currentPlotItems = self.station.plotItem.getViewBox().allChildren()
         for pick in self.station.getPicks():
             if pick not in _currentPlotItems:
-                self.station.plotItem.addItem(pick.getPickItem(self))
+                self.station.plotItem.addItem(pick.getPickLineItem(self))
 
     def initTracePlot(self):
         '''
@@ -118,8 +118,8 @@ class Station(object):
 
         self.st = stream.merge()
         self.stats = self.st[0].stats.copy()
-        self.stats.channel = ''
-        self.stats.channels = set([tr.stats.channel for tr in self.st])
+        self.stats.channel = None
+        self.channels = set([tr.stats.channel for tr in self.st])
 
         self._qTreeStationItem = QTreeWidgetItem()
         self._qTreeStationItem.setText(1, '%s.%s' %
@@ -129,6 +129,7 @@ class Station(object):
                                       (self.getCoordinates()[0],
                                        self.getCoordinates()[1]))
 
+        self.picks = []
         self.channels = []
         for tr in self.st:
             self.channels.append(Channel(tr, station=self))
@@ -157,6 +158,8 @@ class Station(object):
         '''
         Inits the plot canvas pyqtgraph.plotItem
         '''
+        if not self.visible:
+            return
         self.plotItem = pg.PlotItem(name='%s.%s' %
                                     (self.stats.network, self.stats.station),
                                     clipToView=True, autoDownsample=True)
@@ -169,12 +172,12 @@ class Station(object):
 
         self.plotItem.getAxis('bottom').setStyle(showValues=False)
 
+        self.plotSelectedChannel()
+        self.parent.updateAllPlots()
+
         self.parent.GraphicsLayout.addItem(self.plotItem,
                                            row=self.parent.stations.index(self))
         self.parent.GraphicsLayout.nextRow()
-
-        self.plotSelectedChannel()
-        self.parent.updateAllPlots()
 
     def plotSelectedChannel(self):
         '''
@@ -215,6 +218,9 @@ class Station(object):
             self.parent.GraphicsLayout.removeItem(self.plotItem)
             self.plotItem = None
             self.parent.updateAllPlots()
+            for pick in self.getPicks():
+                pick.pickLineItem = None
+
         except:
             pass
 
@@ -244,10 +250,14 @@ class Stations:
         '''
         self.parent = parent
         self.GraphicsLayout = parent.qtGraphLayout
+        self.stream = st
 
         self.stations = []
         for stat in set([tr.stats.station for tr in st]):
             self.addStation(st=st.select(station=stat))
+
+        self.sorted_by = None
+        self.sortableAttribs()
 
     def addStation(self, st):
         '''
@@ -267,6 +277,76 @@ class Stations:
         '''
         return [station for station in self.stations
                 if station.visible]
+
+    def sortableAttribs(self):
+        ignore_attribs = ['channel', 'mseed', 'SAC', 'sampling_rate',
+                          '_format', 'delta', 'calib']
+        self.sortable_attribs = {}
+        attribs = set.intersection(*(set(station.stats.keys())
+                                     for station in self.stations))
+        for key in attribs:
+            if key in ignore_attribs:
+                continue
+            self.sortable_attribs[key] = True
+            if isinstance(eval('self.stations[0].stats.%s' % key), AttribDict):
+                self.sortable_attribs[key] = {}
+                subkeys = set(['%s.%s' % (key, subkey) for tr in self.stream
+                               for subkey in eval('tr.stats.%s.keys()' % key)])
+                for skey in subkeys:
+                    self.sortable_attribs[key][skey] = False
+        print self.sortable_attribs
+
+    def sortByAttrib(self, key):
+        '''
+        Sort station by attribute key
+        '''
+        from operator import attrgetter
+        self.stations = sorted(self.stations, key=attrgetter('stats.%s' % key))
+        self.sorted_by = key
+
+        self._sortStationsOnGUI()
+
+    def _sortStationsOnGUI(self):
+        '''
+        Sort the stations on QTreeWidget and GraphicsLayout
+        '''
+        self.parent.qtGraphLayout.clear()
+        for station in self.stations:
+            self.parent.stationTree.takeTopLevelItem(self.parent.stationTree.indexOfTopLevelItem(station._qTreeStationItem))
+        for station in self.stations:
+            self.parent.stationTree.addTopLevelItem(station._qTreeStationItem)
+            station.initPlot()
+        self.updateAllPlots()
+
+    def showSortQMenu(self, pos):
+        '''
+        Sort Menu for the QTreeWidget
+        '''
+        sort_menu = QMenu()
+        sort_menu.setFont(QFont('', 9))
+        _t = sort_menu.addAction('Sort by attribute')
+        _t.setEnabled(False)
+        _t.setFont(QFont('', 8, QFont.Bold))
+        for attrib, subattrib in self.sortable_attribs.items():
+            if isinstance(subattrib, bool):
+                self._addActionSortMenu(attrib, sort_menu)
+            else:
+                _submenu = sort_menu.addMenu(attrib)
+                for sattrib in subattrib.keys():
+                    self._addActionSortMenu(sattrib, _submenu)
+        sort_menu.exec_(self.parent.stationTree.mapToGlobal(pos))
+
+    def _addActionSortMenu(self, attrib, menu):
+        '''
+        Help function for self.showSortQMenu
+        '''
+        _action = menu.addAction(attrib)
+        _action.setCheckable(True)
+        _action.triggered.connect(lambda: self.sortByAttrib(attrib))
+        if attrib == self.sorted_by:
+            _action.setChecked(True)
+        else:
+            _action.setChecked(False)
 
     def updateAllPlots(self):
         '''
@@ -312,7 +392,8 @@ class Pick:
         self.phase = pickevt['phase']
         self.amplitude = str(pickevt['amplitude'])
 
-        self.pickItem = None
+        self.pickLineItem = None
+        self.pickHighlighted = False
 
         self.network, self.station,\
             self.location, self.channel = self.station_id.split('.')
@@ -326,21 +407,31 @@ class Pick:
         self._QTreePickItem.setBackground(1, QBrush(self.phase.qcolor))
         self.event._QTreeEventItem.addChild(self._QTreePickItem)
 
-    def getPickItem(self, channel):
+    def getPickLineItem(self, channel):
         '''
         Function returns an pyqtgraph.InfiniteLine
         for plotting through Channel()
         '''
         self.channel = channel
-        if self.pickItem is not None:
-            return self.pickItem
-        self.pickItem = pg.InfiniteLine()
+        if self.pickLineItem is not None:
+            return self.pickLineItem
+        self.pickLineItem = pg.InfiniteLine()
         pos = (self.time - channel.tr.stats.starttime) / channel.tr.stats.delta
-        self.pickItem.setValue(pos)
-        self.pickItem.setPen(alpha=.8, color=self.phase.color)
-        #self.pickItem.setMovable(True)
-        #self.pickItem.setHoverPen(alpha=.3, width=10, color='w')
-        return self.pickItem
+        self.pickLineItem.setValue(pos)
+        self.pickLineItem.setPen(color=self.phase.color, width=1)
+        #self.pickLineItem.setMovable(True)
+        #self.pickLineItem.setHoverPen(alpha=.3, width=10, color='w')
+        return self.pickLineItem
+
+    def highlightPickLineItem(self):
+        if self.pickLineItem is None:
+            return False
+        if self.pickHighlighted:
+            self.pickLineItem.setPen(color=self.phase.color, width=1)
+            self.pickHighlighted = False
+        else:
+            self.pickLineItem.setPen(color=self.phase.color, width=3)
+            self.pickHighlighted = True
 
     def asDict(self):
         '''
@@ -357,7 +448,7 @@ class Pick:
 
     def __del__(self):
         self.event._QTreeEventItem.removeChild(self._QTreePickItem)
-        self.pickItem.getViewBox().removeItem(self.pickItem)
+        self.pickLineItem.getViewBox().removeItem(self.pickLineItem)
 
 class Event:
     '''
@@ -475,6 +566,19 @@ class Events:
             else:
                 ev.setActive(False)
 
+    def deleteEvent(self, event):
+        '''
+        :event: Event() to be deleted from container object
+        '''
+        _id = self.parent.eventTree.indexOfTopLevelItem(event._QTreeEventItem)
+        self.parent.eventTree.takeTopLevelItem(_id)
+        self.events.remove(event)
+        event.__del__()
+        self.setActiveEvent(self.events[-1])
+
+    def getAllPicks(self):
+        return [pick for event in self.events for pick in event.picks]
+
     def pickSignal(self, pickevt):
         '''
         Called when a pick through the UI is done
@@ -488,16 +592,6 @@ class Events:
             return
         _p = self.active_event.addPickToEvent(pickevt)
         self.parent.eventTree.scrollToItem(_p._QTreePickItem)
-
-    def deleteEvent(self, event):
-        '''
-        :event: Event() to be deleted from container object
-        '''
-        _id = self.parent.eventTree.indexOfTopLevelItem(event._QTreeEventItem)
-        self.parent.eventTree.takeTopLevelItem(_id)
-        self.events.remove(event)
-        event.__del__()
-        self.setActiveEvent(self.events[-1])
 
     '''
     File IO for the event class

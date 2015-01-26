@@ -58,6 +58,9 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="statusTip">
+            <string>Double click to hide or show; Right click for sorting options.</string>
+           </property>
            <property name="autoFillBackground">
             <bool>false</bool>
            </property>
@@ -184,6 +187,8 @@
              </item>
             </layout>
            </widget>
+           <zorder>layoutWidget</zorder>
+           <zorder>stationTree</zorder>
           </widget>
          </item>
         </layout>
@@ -398,7 +403,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>261</width>
+            <width>260</width>
             <height>231</height>
            </rect>
           </property>
@@ -413,6 +418,9 @@
             <width>260</width>
             <height>0</height>
            </size>
+          </property>
+          <property name="statusTip">
+           <string>Double click to change active event or highlight pick.</string>
           </property>
           <property name="alternatingRowColors">
            <bool>true</bool>
@@ -702,8 +710,10 @@ alternate-background-color: rgb(255, 140, 140);</string>
     <addaction name="actionAs_JSON"/>
     <addaction name="actionLoad_JSON"/>
     <addaction name="separator"/>
-    <addaction name="actionAs_CSV"/>
-    <addaction name="actionAs_HYP"/>
+    <addaction name="actionExport_CSV"/>
+    <addaction name="separator"/>
+    <addaction name="actionExport_stat"/>
+    <addaction name="actionExport_phs"/>
     <addaction name="separator"/>
     <addaction name="actionExit_3"/>
    </widget>
@@ -716,7 +726,14 @@ alternate-background-color: rgb(255, 140, 140);</string>
    <addaction name="menuFile"/>
    <addaction name="menuInfo"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: rgb(247, 255, 174);</string>
+   </property>
+  </widget>
   <action name="actionSave_Picks_as_CSV">
    <property name="text">
     <string>Save CSV</string>
@@ -743,14 +760,17 @@ alternate-background-color: rgb(255, 140, 140);</string>
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="actionAs_CSV">
+  <action name="actionExport_CSV">
    <property name="text">
     <string>Export CSV</string>
    </property>
   </action>
-  <action name="actionAs_HYP">
+  <action name="actionExport_stat">
    <property name="text">
-    <string>Export Hypoinverse2000</string>
+    <string>Export Hyp2k STA file</string>
+   </property>
+   <property name="statusTip">
+    <string>Export Hypoinverse2000 station file in data format #1</string>
    </property>
   </action>
   <action name="actionHelp">
@@ -779,6 +799,14 @@ alternate-background-color: rgb(255, 140, 140);</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q, Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionExport_phs">
+   <property name="text">
+    <string>Export Hyp2k PHS file</string>
+   </property>
+   <property name="statusTip">
+    <string>Export Hypoinverse2000 phase file in format</string>
    </property>
   </action>
  </widget>

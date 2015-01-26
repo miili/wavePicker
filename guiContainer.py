@@ -5,7 +5,7 @@ from obspy.core import UTCDateTime, Stream, AttribDict
 
 import pyqtgraph as pg
 
-import os
+import os, sip
 
 class Channel(object):
     '''
@@ -125,11 +125,13 @@ class Station(object):
         self._qTreeStationItem.setText(1, '%s.%s' %
                                       (self.stats.network,
                                        self.stats.station))
-        self._qTreeStationItem.setText(2, '%.3f N, %.3f E' %
-                                      (self.getCoordinates()[0],
-                                       self.getCoordinates()[1]))
+        #self._qTreeStationItem.setText(2, '%.3f N, %.3f E' %
+        #                              (self.getCoordinates()[0],
+        #                               self.getCoordinates()[1]))
 
         self.picks = []
+        self.station_events = []
+
         self.channels = []
         for tr in self.st:
             self.channels.append(Channel(tr, station=self))
@@ -173,11 +175,11 @@ class Station(object):
         self.plotItem.getAxis('bottom').setStyle(showValues=False)
 
         self.plotSelectedChannel()
-        self.parent.updateAllPlots()
-
         self.parent.GraphicsLayout.addItem(self.plotItem,
                                            row=self.parent.stations.index(self))
+
         self.parent.GraphicsLayout.nextRow()
+        self.parent.updateAllPlots()
 
     def plotSelectedChannel(self):
         '''
@@ -237,6 +239,89 @@ class Station(object):
         except:
             return (0.0, 0.0)
 
+    def getHypStaString(self):
+        '''
+        returns the station's Hypoinverse Station String in data format #1
+
+        Hypoinverse Documentation P. 28
+        '''
+        hyp_sta = {
+            'station_name': self.stats.station,
+            'station_network': self.stats.network,
+            'station_location': self.stats.location,
+            'station_channel_code': '',
+            'station_lat': self.getCoordinates()[0],
+            'station_lon': self.getCoordinates()[1],
+            'station_elevation': self.stats.coordinates.get('elevation', 0.0),
+
+            'station_weight': 'f',  # Full weight
+            'default_period': 2,
+            'station_component_code': ' ',  # Optional
+            'use_alternate_crust_model': False,  # Optional
+            'station_remark': None,  # Optional
+            'P_delay_set1': 0,  # P delay in sec for set 1
+            'P_delay_set2': 0,  # P delay in sec for set 2
+            'amplitude_correction': 0,
+            'amplitude_weight': ' ',
+            'duration_magnitude_correction': 0,
+            'duration_magnitude_weight': '',
+            'instrument_type_code': 0,
+            'calibration_factor': 0,
+            'alternate_component_code': '',
+            'mark_negative_depth': ''
+        }
+        # Station Name
+        rstr = '%5s ' % hyp_sta['station_name']
+        # Seismic Network Code
+        rstr += '%2s ' % hyp_sta.get('station_network', '')
+        # Station Component Code
+        rstr += '%1s' % hyp_sta.get('station_component_code', '')
+        # Channel code
+        rstr += '%3s ' % hyp_sta.get('station_channel_code', '')
+        # Station Weight
+        rstr += '%1s' % str(hyp_sta.get('station_weight', 'f'))
+        # Latitude in deg/min
+        rstr += '%2d %7.4f%s' % (int(abs(hyp_sta['station_lat'])),
+                               ((abs(hyp_sta['station_lat']) % 1) * 60),
+                                'N' if hyp_sta['station_lat'] > 0 else 'S')
+        # Longitude in deg/min
+        rstr += '%3d %7.4f%s' % (int(abs(hyp_sta['station_lon'])),
+                               ((abs(hyp_sta['station_lon']) % 1) * 60),
+                                'E' if hyp_sta['station_lon'] > 0 else 'W')
+        # Station elevation
+        rstr += '%4d' % hyp_sta.get('station_elevation', 0)
+        # Default period in sec
+        rstr += '%3.1f  ' % hyp_sta.get('default_period', 2)
+        # Alternate Crust model
+        rstr += '%1s' % ('A' if hyp_sta.get('use_alternate_crust_model', False)
+                         else '')
+        # Station Remark
+        rstr += '%1s' % ('' if hyp_sta.get('station_remark', None) is None
+                         else hyp_sta['station_remark'])
+        # P Delays
+        rstr += '%5.2f ' % hyp_sta.get('P_delay_set1', 0)
+        rstr += '%5.2f ' % hyp_sta.get('P_delay_set1', 0)
+        # Amplitude correction
+        rstr += '%5.2f' % hyp_sta.get('amplitude_correction', 1)
+        # Amplitude weight
+        rstr += '%1s' % hyp_sta.get('amplitude_weight', '')
+        # Duration magnitude correction
+        rstr += '%5.2f' % hyp_sta.get('duration_magnitude_correction', 0)
+        # Duration magnitude weight code
+        rstr += '%1s' % hyp_sta.get('duration_magnitude_weight', '')
+        # Instrument type code
+        rstr += '%1d' % hyp_sta.get('instrument_type_code', 0)
+        # Calibration Factor
+        rstr += '%6.2f' % hyp_sta.get('calibration_factor', 1.4)
+        # Location code
+        rstr += '%2s' % hyp_sta.get('station_location', '')
+        # Alternate component code
+        rstr += '%3s' % hyp_sta.get('alternate_component_code', '')
+        # Mark negative depth
+        rstr += '%1s' % hyp_sta.get('mark_negative_depth', '')
+        print rstr
+        print len(rstr)+1
+        return rstr
 
 class Stations:
     '''
@@ -293,8 +378,7 @@ class Stations:
                 subkeys = set(['%s.%s' % (key, subkey) for tr in self.stream
                                for subkey in eval('tr.stats.%s.keys()' % key)])
                 for skey in subkeys:
-                    self.sortable_attribs[key][skey] = False
-        print self.sortable_attribs
+                    self.sortable_attribs[key][skey] = True
 
     def sortByAttrib(self, key):
         '''
@@ -310,7 +394,9 @@ class Stations:
         '''
         Sort the stations on QTreeWidget and GraphicsLayout
         '''
+        # Clear all plots
         self.parent.qtGraphLayout.clear()
+        # Update QtreeWidget
         for station in self.stations:
             self.parent.stationTree.takeTopLevelItem(self.parent.stationTree.indexOfTopLevelItem(station._qTreeStationItem))
         for station in self.stations:
@@ -359,6 +445,11 @@ class Stations:
         visible_stations[-1].plotItem.getAxis('bottom').setStyle(showValues=True)
             #except:
             #    pass
+
+    def exportHypStaFile(self, filename):
+        with open(filename, 'w') as stat_file:
+            for station in self.stations:
+                stat_file.write(station.getHypStaString() + '\n')
 
     def __iter__(self):
         return iter(self.stations)
@@ -429,9 +520,11 @@ class Pick:
         if self.pickHighlighted:
             self.pickLineItem.setPen(color=self.phase.color, width=1)
             self.pickHighlighted = False
+            self._QTreePickItem.setFont(1, QFont('', 8, QFont.Normal))
         else:
             self.pickLineItem.setPen(color=self.phase.color, width=3)
             self.pickHighlighted = True
+            self._QTreePickItem.setFont(1, QFont('', 8, QFont.Bold))
 
     def asDict(self):
         '''
@@ -446,13 +539,21 @@ class Pick:
             'amplitude': self.amplitude
         }
 
+    def stringHypoinverse(self):
+        '''
+        Returns the Hypoinverse2000 phase file for this pick
+        '''
+        pass
+
     def __del__(self):
         self.event._QTreeEventItem.removeChild(self._QTreePickItem)
         self.pickLineItem.getViewBox().removeItem(self.pickLineItem)
+        self.pickLineItem = None
+
 
 class Event:
     '''
-    Event container hold a list of the associated picks and a
+    Event container holds a list of the associated picks and a
     QTreeWidgetItem
     '''
     def __init__(self, parent, id):
@@ -696,3 +797,4 @@ class pick2:
         self.color = 'w'
         self.qcolor = QColor('white')
         self.qcolor.setAlpha(.4)
+

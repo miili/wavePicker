@@ -138,19 +138,9 @@ class grapePicker(mainWindow.Ui_MainWindow, QMainWindow):
         Connect File QMenu
         '''
         self.actionAs_JSON.triggered.connect(self._picksSaveJSON)
-        self.actionAs_CSV.triggered.connect(self._picksSaveCSV)
         self.actionLoad_JSON.triggered.connect(self._picksLoadJSON)
-
-    def _picksSaveCSV(self):
-        '''
-        Open file dialog and save CSV
-        '''
-        fileDialog = QFileDialog.getSaveFileName(self, 'Save CSV',
-                                                 filter='CSV File (*.csv)')
-        filename = fileDialog.getSaveFileName()
-
-        if filename[0] is not u'':
-            self.events.exportCSV(filename[0])
+        self.actionExport_CSV.triggered.connect(self._picksExportCSV)
+        self.actionExport_stat.triggered.connect(self._stationsExportSta)
 
     def _picksSaveJSON(self):
         '''
@@ -159,6 +149,8 @@ class grapePicker(mainWindow.Ui_MainWindow, QMainWindow):
         filename = QFileDialog.getSaveFileName(self, 'Save JSON',
                                                filter='JSON File (*.json)')
         if filename[0] is not u'':
+            if filename[0][-5:].lower() is not '.json':
+                filename[0] += '.json'
             self.events.exportJSON(filename[0])
 
     def _picksLoadJSON(self):
@@ -172,6 +164,28 @@ class grapePicker(mainWindow.Ui_MainWindow, QMainWindow):
         if filename[0] is not u'':
             self.events.importJSON(filename[0])
             self._changeSelectedChannel()
+
+    def _picksExportCSV(self):
+        '''
+        Open file dialog and save CSV
+        '''
+        filename = QFileDialog.getSaveFileName(self, 'Save CSV',
+                                                 filter='CSV File (*.csv)')[0]
+        if filename is not u'':
+            if filename[-4:].lower() is not '.csv':
+                filename += '.csv'
+            self.events.exportCSV(filename)
+
+    def _stationsExportSta(self):
+        '''
+        Open file dialog and save Hypoinverse Stat file
+        '''
+        filename = QFileDialog.getSaveFileName(self,'Save Hypoinverse2000 Station File',
+                                               filter='STA File (*.sta)')[0]
+        if filename is not u'':
+            if filename[-4:].lower() is not '.sta':
+                filename += '.sta'
+            self.stations.exportHypStaFile(filename)
 
     '''
     Picking Functions
@@ -189,7 +203,7 @@ class grapePicker(mainWindow.Ui_MainWindow, QMainWindow):
         '''
         Connect the pick buttons
         '''
-        self.addEventBtn.clicked.connect(self.events.addEvent)
+        self.addEventBtn.clicked.connect(self._addEventDialog)
         self.deleteItemBtn.clicked.connect(self._deleteButtonClick)
         self.pick1.clicked.connect(self._changeActivePicker)
         self.pick2.clicked.connect(self._changeActivePicker)
@@ -209,6 +223,15 @@ class grapePicker(mainWindow.Ui_MainWindow, QMainWindow):
                 if pick._QTreePickItem.isSelected():
                     event.deletePick(pick)
                     continue
+
+    def _addEventDialog(self):
+        init_id = (max([event.id for event in self.events])+1
+                   if len(self.events) > 0 else 0)
+        event_id = QInputDialog.getInteger(self, 'New Event ID', 'Event ID',
+                                           minValue=0, step=1,
+                                           value=init_id)
+        if event_id[1]:
+            self.events.addEvent(id=event_id[0])
 
     '''
     Bandpass Filter Functions

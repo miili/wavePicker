@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Wed Jan 21 16:40:23 2015
+# Created: Thu Jan 22 18:07:48 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -145,7 +145,7 @@ class Ui_MainWindow(object):
         self.pick2.setObjectName("pick2")
         self.gridLayout.addWidget(self.pick2, 0, 4, 1, 1)
         self.eventTree = QtGui.QTreeWidget(self.pageEvents)
-        self.eventTree.setGeometry(QtCore.QRect(0, 0, 261, 231))
+        self.eventTree.setGeometry(QtCore.QRect(0, 0, 260, 231))
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -248,6 +248,8 @@ class Ui_MainWindow(object):
         self.menuInfo.setObjectName("menuInfo")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
+        self.statusbar.setAutoFillBackground(False)
+        self.statusbar.setStyleSheet("background: rgb(247, 255, 174);")
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
         self.actionSave_Picks_as_CSV = QtGui.QAction(MainWindow)
@@ -258,10 +260,10 @@ class Ui_MainWindow(object):
         self.actionLoad_JSON.setObjectName("actionLoad_JSON")
         self.actionAs_JSON = QtGui.QAction(MainWindow)
         self.actionAs_JSON.setObjectName("actionAs_JSON")
-        self.actionAs_CSV = QtGui.QAction(MainWindow)
-        self.actionAs_CSV.setObjectName("actionAs_CSV")
-        self.actionAs_HYP = QtGui.QAction(MainWindow)
-        self.actionAs_HYP.setObjectName("actionAs_HYP")
+        self.actionExport_CSV = QtGui.QAction(MainWindow)
+        self.actionExport_CSV.setObjectName("actionExport_CSV")
+        self.actionExport_stat = QtGui.QAction(MainWindow)
+        self.actionExport_stat.setObjectName("actionExport_stat")
         self.actionHelp = QtGui.QAction(MainWindow)
         self.actionHelp.setObjectName("actionHelp")
         self.actionExit = QtGui.QAction(MainWindow)
@@ -273,11 +275,15 @@ class Ui_MainWindow(object):
         self.actionExit_2.setObjectName("actionExit_2")
         self.actionExit_3 = QtGui.QAction(MainWindow)
         self.actionExit_3.setObjectName("actionExit_3")
+        self.actionExport_phs = QtGui.QAction(MainWindow)
+        self.actionExport_phs.setObjectName("actionExport_phs")
         self.menuFile.addAction(self.actionAs_JSON)
         self.menuFile.addAction(self.actionLoad_JSON)
         self.menuFile.addSeparator()
-        self.menuFile.addAction(self.actionAs_CSV)
-        self.menuFile.addAction(self.actionAs_HYP)
+        self.menuFile.addAction(self.actionExport_CSV)
+        self.menuFile.addSeparator()
+        self.menuFile.addAction(self.actionExport_stat)
+        self.menuFile.addAction(self.actionExport_phs)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionExit_3)
         self.menuInfo.addAction(self.actionHelp)
@@ -298,6 +304,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "GrapePicker", None, QtGui.QApplication.UnicodeUTF8))
+        self.stationTree.setStatusTip(QtGui.QApplication.translate("MainWindow", "Double click to hide or show; Right click for sorting options.", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setTitle(QtGui.QApplication.translate("MainWindow", "Component View", None, QtGui.QApplication.UnicodeUTF8))
         self.compZbtn.setToolTip(QtGui.QApplication.translate("MainWindow", "Shortcut Z Trace: 1", None, QtGui.QApplication.UnicodeUTF8))
         self.compZbtn.setStatusTip(QtGui.QApplication.translate("MainWindow", "Shortcut Z Trace: 1", None, QtGui.QApplication.UnicodeUTF8))
@@ -332,6 +339,7 @@ class Ui_MainWindow(object):
         self.pick2.setStatusTip(QtGui.QApplication.translate("MainWindow", "Shortcut 2 Pick: F6", None, QtGui.QApplication.UnicodeUTF8))
         self.pick2.setText(QtGui.QApplication.translate("MainWindow", "2", None, QtGui.QApplication.UnicodeUTF8))
         self.pick2.setShortcut(QtGui.QApplication.translate("MainWindow", "F6", None, QtGui.QApplication.UnicodeUTF8))
+        self.eventTree.setStatusTip(QtGui.QApplication.translate("MainWindow", "Double click to change active event or highlight pick.", None, QtGui.QApplication.UnicodeUTF8))
         self.eventTree.headerItem().setText(0, QtGui.QApplication.translate("MainWindow", "ID", None, QtGui.QApplication.UnicodeUTF8))
         self.addEventBtn.setText(QtGui.QApplication.translate("MainWindow", "Add Event", None, QtGui.QApplication.UnicodeUTF8))
         self.deleteItemBtn.setText(QtGui.QApplication.translate("MainWindow", "Delete Item", None, QtGui.QApplication.UnicodeUTF8))
@@ -351,12 +359,15 @@ class Ui_MainWindow(object):
         self.actionLoad_JSON.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+O", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAs_JSON.setText(QtGui.QApplication.translate("MainWindow", "Save JSON", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAs_JSON.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+S", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionAs_CSV.setText(QtGui.QApplication.translate("MainWindow", "Export CSV", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionAs_HYP.setText(QtGui.QApplication.translate("MainWindow", "Export Hypoinverse2000", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExport_CSV.setText(QtGui.QApplication.translate("MainWindow", "Export CSV", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExport_stat.setText(QtGui.QApplication.translate("MainWindow", "Export Hyp2k STA file", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExport_stat.setStatusTip(QtGui.QApplication.translate("MainWindow", "Export Hypoinverse2000 station file in data format #1", None, QtGui.QApplication.UnicodeUTF8))
         self.actionHelp.setText(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExit.setText(QtGui.QApplication.translate("MainWindow", "Exit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExit_2.setText(QtGui.QApplication.translate("MainWindow", "Exit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExit_3.setText(QtGui.QApplication.translate("MainWindow", "Exit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExit_3.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+Q, Ctrl+S", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExport_phs.setText(QtGui.QApplication.translate("MainWindow", "Export Hyp2k PHS file", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExport_phs.setStatusTip(QtGui.QApplication.translate("MainWindow", "Export Hypoinverse2000 phase file in format", None, QtGui.QApplication.UnicodeUTF8))
 
 from pyqtgraph import GraphicsLayoutWidget

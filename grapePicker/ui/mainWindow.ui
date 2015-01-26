@@ -104,19 +104,22 @@
             </size>
            </property>
            <property name="title">
-            <string>Component View</string>
+            <string>Component</string>
            </property>
-           <widget class="QWidget" name="layoutWidget">
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+           <widget class="QWidget" name="">
             <property name="geometry">
              <rect>
-              <x>1</x>
-              <y>22</y>
-              <width>251</width>
-              <height>29</height>
+              <x>10</x>
+              <y>20</y>
+              <width>239</width>
+              <height>27</height>
              </rect>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="0" column="0">
               <widget class="QPushButton" name="compZbtn">
                <property name="toolTip">
                 <string>Shortcut Z Trace: 1</string>
@@ -141,7 +144,7 @@
                </property>
               </widget>
              </item>
-             <item>
+             <item row="0" column="1">
               <widget class="QPushButton" name="compNbtn">
                <property name="toolTip">
                 <string>Shortcut N Trace: 2</string>
@@ -163,7 +166,7 @@
                </property>
               </widget>
              </item>
-             <item>
+             <item row="0" column="2">
               <widget class="QPushButton" name="compEbtn">
                <property name="toolTip">
                 <string>Shortcut E Trace: 3</string>
@@ -187,8 +190,6 @@
              </item>
             </layout>
            </widget>
-           <zorder>layoutWidget</zorder>
-           <zorder>stationTree</zorder>
           </widget>
          </item>
         </layout>
@@ -224,7 +225,7 @@
            <x>0</x>
            <y>0</y>
            <width>258</width>
-           <height>366</height>
+           <height>375</height>
           </rect>
          </property>
          <attribute name="label">
@@ -249,24 +250,21 @@
            <string>Active Picker</string>
           </property>
           <property name="flat">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="checkable">
            <bool>false</bool>
           </property>
-          <widget class="QWidget" name="layoutWidget">
+          <widget class="QWidget" name="">
            <property name="geometry">
             <rect>
-             <x>0</x>
-             <y>25</y>
-             <width>251</width>
-             <height>29</height>
+             <x>6</x>
+             <y>22</y>
+             <width>241</width>
+             <height>27</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout">
-            <property name="horizontalSpacing">
-             <number>2</number>
-            </property>
             <item row="0" column="0">
              <widget class="QPushButton" name="pickP">
               <property name="toolTip">
@@ -442,9 +440,9 @@
          <widget class="QWidget" name="layoutWidget">
           <property name="geometry">
            <rect>
-            <x>0</x>
+            <x>10</x>
             <y>240</y>
-            <width>251</width>
+            <width>231</width>
             <height>29</height>
            </rect>
           </property>
@@ -472,7 +470,7 @@
            <x>0</x>
            <y>0</y>
            <width>258</width>
-           <height>366</height>
+           <height>375</height>
           </rect>
          </property>
          <attribute name="label">
@@ -700,7 +698,7 @@ alternate-background-color: rgb(255, 140, 140);</string>
      <x>0</x>
      <y>0</y>
      <width>1176</width>
-     <height>25</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

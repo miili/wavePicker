@@ -79,7 +79,7 @@ class grapePicker(mainWindow.Ui_MainWindow, QMainWindow):
         Setup stationtree :QTreeWidgetItem:
         '''
         self.stationTree.setColumnCount(3)
-        self.stationTree.setColumnWidth(0, 60)
+        self.stationTree.setColumnWidth(0, 40)
         self.stationTree.setColumnWidth(1, 90)
         self.stationTree.setColumnWidth(2, 150)
         self.stationTree.setExpandsOnDoubleClick(False)
@@ -123,7 +123,7 @@ class grapePicker(mainWindow.Ui_MainWindow, QMainWindow):
         Init the event tree :QTreeWidgetItem:
         '''
         self.eventTree.setColumnCount(2)
-        self.eventTree.setColumnWidth(0, 80)
+        self.eventTree.setColumnWidth(0, 100)
         self.eventTree.itemDoubleClicked.connect(self._highlightPick)
         #self.eventTree.itemClicked.connect()
 

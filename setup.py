@@ -13,6 +13,7 @@ setup(
 	keywords='seismology traveltime hypocenter hypoinverse2000 obspy',
 	url='https://github.com/miili/grapePicker',
 	long_description=read('README.md'),
-	packages=['grapePicker']
+	packages=['grapePicker'],
+	package_data={'grapePicker': ['icons/*.png']}
 	#install_requires=['pyqtgraph', 'pyside', 'obspy']
 	)

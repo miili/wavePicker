@@ -109,7 +109,7 @@
            <property name="flat">
             <bool>true</bool>
            </property>
-           <widget class="QWidget" name="">
+           <widget class="QWidget" name="layoutWidget">
             <property name="geometry">
              <rect>
               <x>10</x>
@@ -255,7 +255,7 @@
           <property name="checkable">
            <bool>false</bool>
           </property>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <property name="geometry">
             <rect>
              <x>6</x>
@@ -274,7 +274,8 @@
                <string>Shortcut P Pick: F1</string>
               </property>
               <property name="styleSheet">
-               <string notr="true">QPushButton#pickP:checked{background-color: green;};</string>
+               <string notr="true">QPushButton#pickP:checked{background-color: rgb(158, 234, 116);
+alternate-background-color: rgb(255, 140, 140);};</string>
               </property>
               <property name="text">
                <string>P</string>
@@ -302,7 +303,8 @@
                <string>Shortcut S Pick: F2</string>
               </property>
               <property name="styleSheet">
-               <string notr="true">QPushButton#pickS:checked{background-color: green;};</string>
+               <string notr="true">QPushButton#pickS:checked{background-color: rgb(158, 234, 116);
+alternate-background-color: rgb(255, 140, 140);};</string>
               </property>
               <property name="text">
                <string>S</string>
@@ -327,7 +329,8 @@
                <string>Shortcut Amp Pick: F3</string>
               </property>
               <property name="styleSheet">
-               <string notr="true">QPushButton#pickAmp:checked{background-color: green;};</string>
+               <string notr="true">QPushButton#pickAmp:checked{background-color: rgb(158, 234, 116);
+alternate-background-color: rgb(255, 140, 140);};</string>
               </property>
               <property name="text">
                <string>Amp</string>
@@ -352,7 +355,8 @@
                <string>Shortcut 1 Pick: F5</string>
               </property>
               <property name="styleSheet">
-               <string notr="true">QPushButton#pick1:checked{background-color: green;};</string>
+               <string notr="true">QPushButton#pick1:checked{background-color: rgb(158, 234, 116);
+alternate-background-color: rgb(255, 140, 140);};</string>
               </property>
               <property name="text">
                <string>1</string>
@@ -377,7 +381,8 @@
                <string>Shortcut 2 Pick: F6</string>
               </property>
               <property name="styleSheet">
-               <string notr="true">QPushButton#pick2:checked{background-color: green;};</string>
+               <string notr="true">QPushButton#pick2:checked{background-color: rgb(158, 234, 116);
+alternate-background-color: rgb(255, 140, 140);};</string>
               </property>
               <property name="text">
                <string>2</string>
@@ -579,9 +584,9 @@ alternate-background-color: rgb(255, 140, 140);</string>
          <widget class="QCheckBox" name="zerophaseCheck">
           <property name="geometry">
            <rect>
-            <x>130</x>
+            <x>160</x>
             <y>130</y>
-            <width>97</width>
+            <width>91</width>
             <height>22</height>
            </rect>
           </property>
@@ -629,7 +634,7 @@ alternate-background-color: rgb(255, 140, 140);</string>
            <rect>
             <x>10</x>
             <y>60</y>
-            <width>221</width>
+            <width>231</width>
             <height>29</height>
            </rect>
           </property>
@@ -657,7 +662,7 @@ alternate-background-color: rgb(255, 140, 140);</string>
            <rect>
             <x>10</x>
             <y>90</y>
-            <width>221</width>
+            <width>231</width>
             <height>29</height>
            </rect>
           </property>

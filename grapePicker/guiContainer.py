@@ -32,8 +32,8 @@ class Channel(object):
         self._qTreeStationChannel.setText(2, '%s\n%s' %
                                          (self.tr.stats.starttime,
                                           self.tr.stats.endtime))
-        self._qTreeStationChannel.setFont(1, QFont('', 8))
-        self._qTreeStationChannel.setFont(2, QFont('', 8))
+        self._qTreeStationChannel.setFont(1, QFont('', 7))
+        self._qTreeStationChannel.setFont(2, QFont('', 7))
         self.station._qTreeStationItem.addChild(self._qTreeStationChannel)
 
     def plotTraceItem(self):
@@ -496,7 +496,8 @@ class Pick:
 
         self._QTreePickItem.setFont(1, QFont('', 8))
         self._QTreePickItem.setBackground(1, QBrush(self.phase.qcolor))
-        self.event._QTreeEventItem.addChild(self._QTreePickItem)
+        #self.event._QTreeEventItem.addChild(self._QTreePickItem)
+        self.event.getStationItem(self.station).addChild(self._QTreePickItem)
 
     def getPickLineItem(self, channel):
         '''
@@ -546,7 +547,7 @@ class Pick:
         pass
 
     def __del__(self):
-        self.event._QTreeEventItem.removeChild(self._QTreePickItem)
+        self.event.getStationItem(self.station).removeChild(self._QTreePickItem)
         self.pickLineItem.getViewBox().removeItem(self.pickLineItem)
         self.pickLineItem = None
 
@@ -569,8 +570,27 @@ class Event:
         self.picks = []
 
         self._QTreeEventItem = QTreeWidgetItem()
-        self._QTreeEventItem.setText(0, 'ID %d' % self.id)
+        self._QTreeEventItem.setText(0, 'Ev %d' % self.id)
+        self._initStationItems()
         self._updateItemText()
+
+    def _initStationItems(self):
+        self.stationItems = {}
+        for station in [station.stats.station for
+                        station in self.parent.parent.stations]:
+            self.stationItems[station] = QTreeWidgetItem()
+            self.stationItems[station].setText(0, station)
+            self.stationItems[station].setHidden(True)
+            self._QTreeEventItem.addChild(self.stationItems[station])
+
+    def getStationItem(self, station):
+        if self.stationItems.has_key(station):
+            return self.stationItems.get(station)
+        else:
+            self.stationItems[station] = QTreeWidgetItem()
+            self.stationItems[station].setHidden(True)
+            self._QTreeEventItem.addChild(self.stationItems[station])
+            return self.stationItems.get(station)
 
     def addPickToEvent(self, pickevt):
         '''
@@ -612,11 +632,30 @@ class Event:
             picks[-1]['event_id'] = self.id
         return picks
 
+    def _getPickedStations(self):
+        return [pick.station for pick in self.picks]
+
+    def _updateStationItems(self):
+        '''
+        Updates the Event Stations QTreeWidgetItems
+        '''
+        picked_stations = self._getPickedStations()
+        print picked_stations
+        for station, item in self.stationItems.iteritems():
+            item.setText(1, '%d Picks' % picked_stations.count(station))
+            if station in picked_stations:
+                item.setHidden(False)
+            else:
+                item.setHidden(True)
+
     def _updateItemText(self):
         '''
         Updates the text of QTreeWidgetItem
         '''
-        self._QTreeEventItem.setText(1, '%d Picks' % len(self.picks))
+        self._QTreeEventItem.setText(1, '%d Stations'
+                                     % len(set([pick.station for
+                                                pick in self.picks])))
+        self._updateStationItems()
 
     def __del__(self):
         for pick in self.picks:

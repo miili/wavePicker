@@ -104,19 +104,22 @@
             </size>
            </property>
            <property name="title">
-            <string>Component View</string>
+            <string>Component</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
            </property>
            <widget class="QWidget" name="layoutWidget">
             <property name="geometry">
              <rect>
-              <x>1</x>
-              <y>22</y>
-              <width>251</width>
-              <height>29</height>
+              <x>10</x>
+              <y>20</y>
+              <width>239</width>
+              <height>27</height>
              </rect>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="0" column="0">
               <widget class="QPushButton" name="compZbtn">
                <property name="toolTip">
                 <string>Shortcut Z Trace: 1</string>
@@ -141,7 +144,7 @@
                </property>
               </widget>
              </item>
-             <item>
+             <item row="0" column="1">
               <widget class="QPushButton" name="compNbtn">
                <property name="toolTip">
                 <string>Shortcut N Trace: 2</string>
@@ -163,7 +166,7 @@
                </property>
               </widget>
              </item>
-             <item>
+             <item row="0" column="2">
               <widget class="QPushButton" name="compEbtn">
                <property name="toolTip">
                 <string>Shortcut E Trace: 3</string>
@@ -187,8 +190,6 @@
              </item>
             </layout>
            </widget>
-           <zorder>layoutWidget</zorder>
-           <zorder>stationTree</zorder>
           </widget>
          </item>
         </layout>
@@ -224,7 +225,7 @@
            <x>0</x>
            <y>0</y>
            <width>258</width>
-           <height>366</height>
+           <height>375</height>
           </rect>
          </property>
          <attribute name="label">
@@ -249,7 +250,7 @@
            <string>Active Picker</string>
           </property>
           <property name="flat">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="checkable">
            <bool>false</bool>
@@ -257,16 +258,13 @@
           <widget class="QWidget" name="layoutWidget">
            <property name="geometry">
             <rect>
-             <x>0</x>
-             <y>25</y>
-             <width>251</width>
-             <height>29</height>
+             <x>6</x>
+             <y>22</y>
+             <width>241</width>
+             <height>27</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout">
-            <property name="horizontalSpacing">
-             <number>2</number>
-            </property>
             <item row="0" column="0">
              <widget class="QPushButton" name="pickP">
               <property name="toolTip">
@@ -276,7 +274,8 @@
                <string>Shortcut P Pick: F1</string>
               </property>
               <property name="styleSheet">
-               <string notr="true">QPushButton#pickP:checked{background-color: green;};</string>
+               <string notr="true">QPushButton#pickP:checked{background-color: rgb(158, 234, 116);
+alternate-background-color: rgb(255, 140, 140);};</string>
               </property>
               <property name="text">
                <string>P</string>
@@ -304,7 +303,8 @@
                <string>Shortcut S Pick: F2</string>
               </property>
               <property name="styleSheet">
-               <string notr="true">QPushButton#pickS:checked{background-color: green;};</string>
+               <string notr="true">QPushButton#pickS:checked{background-color: rgb(158, 234, 116);
+alternate-background-color: rgb(255, 140, 140);};</string>
               </property>
               <property name="text">
                <string>S</string>
@@ -329,7 +329,8 @@
                <string>Shortcut Amp Pick: F3</string>
               </property>
               <property name="styleSheet">
-               <string notr="true">QPushButton#pickAmp:checked{background-color: green;};</string>
+               <string notr="true">QPushButton#pickAmp:checked{background-color: rgb(158, 234, 116);
+alternate-background-color: rgb(255, 140, 140);};</string>
               </property>
               <property name="text">
                <string>Amp</string>
@@ -354,7 +355,8 @@
                <string>Shortcut 1 Pick: F5</string>
               </property>
               <property name="styleSheet">
-               <string notr="true">QPushButton#pick1:checked{background-color: green;};</string>
+               <string notr="true">QPushButton#pick1:checked{background-color: rgb(158, 234, 116);
+alternate-background-color: rgb(255, 140, 140);};</string>
               </property>
               <property name="text">
                <string>1</string>
@@ -379,7 +381,8 @@
                <string>Shortcut 2 Pick: F6</string>
               </property>
               <property name="styleSheet">
-               <string notr="true">QPushButton#pick2:checked{background-color: green;};</string>
+               <string notr="true">QPushButton#pick2:checked{background-color: rgb(158, 234, 116);
+alternate-background-color: rgb(255, 140, 140);};</string>
               </property>
               <property name="text">
                <string>2</string>
@@ -442,9 +445,9 @@
          <widget class="QWidget" name="layoutWidget">
           <property name="geometry">
            <rect>
-            <x>0</x>
+            <x>10</x>
             <y>240</y>
-            <width>251</width>
+            <width>231</width>
             <height>29</height>
            </rect>
           </property>
@@ -472,7 +475,7 @@
            <x>0</x>
            <y>0</y>
            <width>258</width>
-           <height>366</height>
+           <height>375</height>
           </rect>
          </property>
          <attribute name="label">
@@ -581,9 +584,9 @@ alternate-background-color: rgb(255, 140, 140);</string>
          <widget class="QCheckBox" name="zerophaseCheck">
           <property name="geometry">
            <rect>
-            <x>130</x>
+            <x>160</x>
             <y>130</y>
-            <width>97</width>
+            <width>91</width>
             <height>22</height>
            </rect>
           </property>
@@ -631,7 +634,7 @@ alternate-background-color: rgb(255, 140, 140);</string>
            <rect>
             <x>10</x>
             <y>60</y>
-            <width>221</width>
+            <width>231</width>
             <height>29</height>
            </rect>
           </property>
@@ -659,7 +662,7 @@ alternate-background-color: rgb(255, 140, 140);</string>
            <rect>
             <x>10</x>
             <y>90</y>
-            <width>221</width>
+            <width>231</width>
             <height>29</height>
            </rect>
           </property>
@@ -700,7 +703,7 @@ alternate-background-color: rgb(255, 140, 140);</string>
      <x>0</x>
      <y>0</y>
      <width>1176</width>
-     <height>25</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

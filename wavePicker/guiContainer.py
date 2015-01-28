@@ -19,8 +19,8 @@ class Channel(object):
         '''
         init the channel with parent Station() and obspy trace
 
-        :tr: obspy.core.trace
-        :station: Station()
+        :param tr: obspy.core.trace of the channel
+        :param station: Station()
         '''
         self.tr = tr
         self.station = station
@@ -123,7 +123,7 @@ class Station(object):
         self.st = stream.merge()
         self.stats = self.st[0].stats.copy()
         self.stats.channel = None
-        self.channels = set([tr.stats.channel for tr in self.st])
+        self.channel_components = set([tr.stats.channel for tr in self.st])
 
         self.QStationItem = QTreeWidgetItem()
         self.QStationItem.setText(1, '%s.%s' %
@@ -243,7 +243,13 @@ class Station(object):
         except:
             return (0.0, 0.0)
 
-    def getHypStaString(self):
+    def getStaStringAllComponents(self):
+        rstr = []
+        for channel in self.channel_components:
+            rstr.append(self.getHypStaString({'station_channel_code': channel}))
+        return '\n'.join(rstr)
+
+    def getHypStaString(self, sta_dict=None):
         '''
         returns the station's Hypoinverse Station String in data format #1
 
@@ -254,13 +260,13 @@ class Station(object):
             'station_network': self.stats.network,
             'station_location': self.stats.location,
             'station_channel_code': '',
+            'station_component_code': '',  # Optional
             'station_lat': self.getCoordinates()[0],
             'station_lon': self.getCoordinates()[1],
             'station_elevation': self.stats.coordinates.get('elevation', 0.0),
 
             'station_weight': 'f',  # Full weight
             'default_period': 2,
-            'station_component_code': ' ',  # Optional
             'use_alternate_crust_model': False,  # Optional
             'station_remark': None,  # Optional
             'P_delay_set1': 0,  # P delay in sec for set 1
@@ -274,8 +280,12 @@ class Station(object):
             'alternate_component_code': '',
             'mark_negative_depth': ''
         }
+
+        if sta_dict is not None:
+            hyp_sta.update(sta_dict)
+
         # Station Name
-        rstr = '%5s ' % hyp_sta['station_name']
+        rstr = '%-5s ' % hyp_sta['station_name']
         # Seismic Network Code
         rstr += '%2s ' % hyp_sta.get('station_network', '')
         # Station Component Code
@@ -323,8 +333,6 @@ class Station(object):
         rstr += '%3s' % hyp_sta.get('alternate_component_code', '')
         # Mark negative depth
         rstr += '%1s' % hyp_sta.get('mark_negative_depth', '')
-        print rstr
-        print len(rstr)+1
         return rstr
 
 
@@ -353,7 +361,7 @@ class Stations:
         '''
         Adds a station from
 
-        :st: obspy stream
+        :param st: obspy stream
         '''
         self.stations.append(Station(stream=st, parent=self))
         self.parent.stationTree.addTopLevelItem(
@@ -454,7 +462,7 @@ class Stations:
     def exportHypStaFile(self, filename):
         with open(filename, 'w') as stat_file:
             for station in self.stations:
-                stat_file.write(station.getHypStaString() + '\n')
+                stat_file.write(station.getStaStringAllComponents() + '\n')
 
     def __iter__(self):
         return iter(self.stations)
@@ -617,6 +625,8 @@ class Event:
     def setActive(self, active=True):
         '''
         Sets whether the event is the active pick event
+
+        :param active: whether the stations plot is active, type bool
         '''
         if active:
             self.active = True
@@ -702,8 +712,8 @@ class Event:
         rstr += '1'
         # Time and day
         rstr += '%4d' % p_pick.time.year
-        rstr += '%2d%2d%2d%2d' % (p_pick.time.month, p_pick.time.day,
-                                  p_pick.time.hour, p_pick.time.minute)
+        rstr += '%02d%02d%02d%02d' % (p_pick.time.month, p_pick.time.day,
+                                      p_pick.time.hour, p_pick.time.minute)
         # Second of P Arrival
         rstr += '%5.2f' % (p_pick.time.second + p_pick.time.microsecond*1e-6)
         # P Travel time residual (blank)
@@ -715,12 +725,15 @@ class Event:
             # Make S arrival blank
             rstr += '%13s' % ''
         else:
-            _sdiff = s_pick.time - p_pick.time
+            _sdiff = p_pick.time + (s_pick.time - p_pick.time)
             # Second of S Arrival
-            rstr += '%5.2f' % (_sdiff)
-            rstr += 'ES '
+            rstr += '%5.2f' % (_sdiff.time.second
+                               + _sdiff.time.microsecond*1e-6)
+            rstr += 'ES'
+            # First Motion
+            rstr += '%1s' % ('U' if s_pick.amplitude > 0 else 'D')
             # Weight code
-            rstr += '1'
+            rstr += '2'
             # S Travel Time residual (blank)
             rstr += '%4s' % ''
         # Amplitude Stuff
@@ -871,6 +884,8 @@ class Events:
 
     def exportAllEventsPhases(self, filename):
         with file(filename, 'w') as phs_file:
+            # Write Header
+            phs_file.write('20140123 0 8 64735 5775120 3094  355  0\n')
             for event in self.events:
                 phs_file.write(event.exportEventPhases())
                 phs_file.write('\n')

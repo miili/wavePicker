@@ -214,7 +214,7 @@
          <enum>QFrame::Raised</enum>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <property name="tabSpacing">
          <number>6</number>
@@ -502,6 +502,12 @@ alternate-background-color: rgb(255, 140, 140);};</string>
             <width>241</width>
             <height>31</height>
            </rect>
+          </property>
+          <property name="toolTip">
+           <string>Shortcut for filter: f</string>
+          </property>
+          <property name="statusTip">
+           <string>Shortcut for filter: f</string>
           </property>
           <property name="styleSheet">
            <string notr="true">border-color: rgb(154, 154, 154);

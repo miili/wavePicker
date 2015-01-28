@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Wed Jan 28 13:16:37 2015
+# Created: Wed Jan 28 17:22:17 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -299,7 +299,7 @@ class Ui_MainWindow(object):
         self.labelCorner.setBuddy(self.cornersSpin)
 
         self.retranslateUi(MainWindow)
-        self.toolBox.setCurrentIndex(0)
+        self.toolBox.setCurrentIndex(1)
         self.toolBox.layout().setSpacing(6)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         MainWindow.setTabOrder(self.stationTree, self.qtGraphLayout)
@@ -352,6 +352,8 @@ class Ui_MainWindow(object):
         self.deleteItemBtn.setText(QtGui.QApplication.translate("MainWindow", "Delete Item", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBox.setItemText(self.toolBox.indexOf(self.pageEvents), QtGui.QApplication.translate("MainWindow", "Event Picks", None, QtGui.QApplication.UnicodeUTF8))
         self.labelFmax.setText(QtGui.QApplication.translate("MainWindow", "Upper Frequency", None, QtGui.QApplication.UnicodeUTF8))
+        self.filterButton.setToolTip(QtGui.QApplication.translate("MainWindow", "Shortcut for filter: f", None, QtGui.QApplication.UnicodeUTF8))
+        self.filterButton.setStatusTip(QtGui.QApplication.translate("MainWindow", "Shortcut for filter: f", None, QtGui.QApplication.UnicodeUTF8))
         self.filterButton.setText(QtGui.QApplication.translate("MainWindow", "Filter On", None, QtGui.QApplication.UnicodeUTF8))
         self.filterButton.setShortcut(QtGui.QApplication.translate("MainWindow", "CapsLock", None, QtGui.QApplication.UnicodeUTF8))
         self.labelFmin.setText(QtGui.QApplication.translate("MainWindow", "Lower Frequency", None, QtGui.QApplication.UnicodeUTF8))

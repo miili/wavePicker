@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Tue Jan 27 17:03:57 2015
+# Created: Wed Jan 28 10:52:34 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -62,7 +62,7 @@ class Ui_MainWindow(object):
         self.groupBox.setFlat(True)
         self.groupBox.setObjectName("groupBox")
         self.layoutWidget1 = QtGui.QWidget(self.groupBox)
-        self.layoutWidget1.setGeometry(QtCore.QRect(10, 20, 239, 27))
+        self.layoutWidget1.setGeometry(QtCore.QRect(10, 20, 269, 29))
         self.layoutWidget1.setObjectName("layoutWidget1")
         self.gridLayout_3 = QtGui.QGridLayout(self.layoutWidget1)
         self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -95,7 +95,7 @@ class Ui_MainWindow(object):
         self.toolBox.setFrameShadow(QtGui.QFrame.Raised)
         self.toolBox.setObjectName("toolBox")
         self.pageEvents = QtGui.QWidget()
-        self.pageEvents.setGeometry(QtCore.QRect(0, 0, 258, 375))
+        self.pageEvents.setGeometry(QtCore.QRect(0, 0, 258, 366))
         self.pageEvents.setObjectName("pageEvents")
         self.pickGroup = QtGui.QGroupBox(self.pageEvents)
         self.pickGroup.setGeometry(QtCore.QRect(0, 270, 256, 60))
@@ -108,7 +108,7 @@ class Ui_MainWindow(object):
         self.pickGroup.setCheckable(False)
         self.pickGroup.setObjectName("pickGroup")
         self.layoutWidget2 = QtGui.QWidget(self.pickGroup)
-        self.layoutWidget2.setGeometry(QtCore.QRect(6, 22, 241, 27))
+        self.layoutWidget2.setGeometry(QtCore.QRect(6, 22, 441, 29))
         self.layoutWidget2.setObjectName("layoutWidget2")
         self.gridLayout = QtGui.QGridLayout(self.layoutWidget2)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
@@ -174,7 +174,7 @@ class Ui_MainWindow(object):
         self.gridLayout_2.addWidget(self.deleteItemBtn, 0, 1, 1, 1)
         self.toolBox.addItem(self.pageEvents, "")
         self.pageFilter = QtGui.QWidget()
-        self.pageFilter.setGeometry(QtCore.QRect(0, 0, 258, 375))
+        self.pageFilter.setGeometry(QtCore.QRect(0, 0, 258, 366))
         self.pageFilter.setObjectName("pageFilter")
         self.labelFmax = QtGui.QLabel(self.pageFilter)
         self.labelFmax.setGeometry(QtCore.QRect(10, 32, 151, 25))
@@ -245,7 +245,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.splitter_2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1176, 20))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1176, 25))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -308,7 +308,7 @@ class Ui_MainWindow(object):
         MainWindow.setTabOrder(self.zerophaseCheck, self.filterButton)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "GrapePicker", None, QtGui.QApplication.UnicodeUTF8))
+        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "wavePicker", None, QtGui.QApplication.UnicodeUTF8))
         self.stationTree.setStatusTip(QtGui.QApplication.translate("MainWindow", "Double click to hide or show; Right click for sorting options.", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setTitle(QtGui.QApplication.translate("MainWindow", "Component", None, QtGui.QApplication.UnicodeUTF8))
         self.compZbtn.setToolTip(QtGui.QApplication.translate("MainWindow", "Shortcut Z Trace: 1", None, QtGui.QApplication.UnicodeUTF8))

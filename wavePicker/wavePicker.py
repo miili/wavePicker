@@ -14,7 +14,7 @@ pickButtonMap = {
 }
 
 
-class grapePicker(mainWindow.Ui_MainWindow, QMainWindow):
+class wavePicker(mainWindow.Ui_MainWindow, QMainWindow):
     def __init__(self, stream=None, nplots=5, parent=None):
         '''
         Init the Application and set up the GUI
@@ -24,7 +24,7 @@ class grapePicker(mainWindow.Ui_MainWindow, QMainWindow):
         app = QApplication(sys.argv)
 
         # Setting up and loading UI
-        super(grapePicker, self).__init__(parent)
+        super(wavePicker, self).__init__(parent)
         self.setupUi(self)
 
         if stream is None or not isinstance(stream, Stream):
@@ -72,7 +72,7 @@ class grapePicker(mainWindow.Ui_MainWindow, QMainWindow):
         '''
         Save backup of active picks
         '''
-        self.events.exportJSON('.~grapePicker.bak.json')
+        self.events.exportJSON('.~wavePicker.bak.json')
 
     def _initStationTree(self):
         '''

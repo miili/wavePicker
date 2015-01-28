@@ -18,7 +18,13 @@ class wavePicker(mainWindow.Ui_MainWindow, QMainWindow):
     def __init__(self, stream=None, nplots=5,
                  project_name='Untitled', parent=None):
         '''
-        Init the Application and set up the GUI
+        A Seismic Wave Time Arrival Picker for ObsPy Stream Objects
+
+        https://github.com/miili/wavePicker
+
+        :param stream: Stream object, type obspy.core.Stream
+        :param nplots: Number of plots to initialise, type int (default: 5)
+        :param project_name: Project name, type string (default: 'Untitled')
         '''
         # Initialising Qt
         QLocale.setDefault(QLocale.c())
@@ -175,7 +181,7 @@ class wavePicker(mainWindow.Ui_MainWindow, QMainWindow):
         '''
         Open file dialog and save CSV
         '''
-        filename = QFileDialog.getSaveFileName(self, 'Save CSV', self.project_name,
+        filename = QFileDialog.getSaveFileName(self, 'Save CSV', self.project_name + '.csv',
                                                  filter='CSV File (*.csv)')[0]
         if filename is not u'':
             if filename[-4:].lower() != '.csv':
@@ -187,7 +193,7 @@ class wavePicker(mainWindow.Ui_MainWindow, QMainWindow):
         Open file dialog and save Hypoinverse Stat file
         '''
         filename = QFileDialog.getSaveFileName(self,'Save Hypoinverse2000 Station File',
-                                               self.project_name,
+                                               self.project_name + '.sta',
                                                filter='STA File (*.sta)')[0]
         if filename is not u'':
             if filename[-4:].lower() != '.sta':
@@ -199,7 +205,7 @@ class wavePicker(mainWindow.Ui_MainWindow, QMainWindow):
         Open file dialog and save Hypoinverse Stat file
         '''
         filename = QFileDialog.getSaveFileName(self,'Save Hypoinverse2000 Phase File',
-                                               self.project_name,
+                                               self.project_name + '.phs',
                                                filter='PHS File (*.phs)')[0]
         if filename is not u'':
             if filename[-4:].lower() != '.phs':

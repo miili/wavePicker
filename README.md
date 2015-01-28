@@ -23,7 +23,7 @@ be aware that compilation of `pyside` can take a long time
 * Fast data visualisation through `pyqtgraph`
 * Earthquake Event Management
 * Save/Load Picks in JSON format
-* Export Stations and Phases to Hypoinver2000 format
+* Export Stations and Phases to Hypoinverse2000 format
 
 ## Screenshots
 ![wavepicker-gui](https://cloud.githubusercontent.com/assets/4992805/5938686/82c7adb2-a70e-11e4-911a-67137247642e.png)

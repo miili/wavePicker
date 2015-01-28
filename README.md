@@ -8,6 +8,10 @@ grapePicker utilizes the following libraries:
 * PySide
 * pyqtgraph
 
+Make sure to apply this simple patch to pyqtgraph before starting
+
+https://github.com/pyqtgraph/pyqtgraph/pull/142
+
 ## Installation
 
 ## Features

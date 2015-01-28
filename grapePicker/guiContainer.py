@@ -11,7 +11,7 @@ class Channel(object):
     '''
     Channel Container Object handels an individual channel
 
-    self._qTreeStationChannel represents the QTreeWidgetItem
+    self.QChannelItem represents the QTreeWidgetItem
     self.traceItem is the inherited pyqtgraph.PlotCurveItem
     '''
     def __init__(self, tr, station):
@@ -25,16 +25,16 @@ class Channel(object):
         self.station = station
         self.channel = tr.stats.channel
 
-        self._qTreeStationChannel = QTreeWidgetItem()
-        self._qTreeStationChannel.setText(1, '%s @ %d Hz' %
+        self.QChannelItem = QTreeWidgetItem()
+        self.QChannelItem.setText(1, '%s @ %d Hz' %
                                          (self.tr.stats.channel,
                                           1./self.tr.stats.delta))
-        self._qTreeStationChannel.setText(2, '%s\n%s' %
+        self.QChannelItem.setText(2, '%s\n%s' %
                                          (self.tr.stats.starttime,
                                           self.tr.stats.endtime))
-        self._qTreeStationChannel.setFont(1, QFont('', 8))
-        self._qTreeStationChannel.setFont(2, QFont('', 8))
-        self.station._qTreeStationItem.addChild(self._qTreeStationChannel)
+        self.QChannelItem.setFont(1, QFont('', 7))
+        self.QChannelItem.setFont(2, QFont('', 7))
+        self.station.QStationItem.addChild(self.QChannelItem)
 
     def plotTraceItem(self):
         '''
@@ -121,11 +121,11 @@ class Station(object):
         self.stats.channel = None
         self.channels = set([tr.stats.channel for tr in self.st])
 
-        self._qTreeStationItem = QTreeWidgetItem()
-        self._qTreeStationItem.setText(1, '%s.%s' %
+        self.QStationItem = QTreeWidgetItem()
+        self.QStationItem.setText(1, '%s.%s' %
                                       (self.stats.network,
                                        self.stats.station))
-        #self._qTreeStationItem.setText(2, '%.3f N, %.3f E' %
+        #self.QStationItem.setText(2, '%.3f N, %.3f E' %
         #                              (self.getCoordinates()[0],
         #                               self.getCoordinates()[1]))
 
@@ -146,12 +146,12 @@ class Station(object):
 
         self.visible = visible
         if visible:
-            self._qTreeStationItem.setIcon(0,
+            self.QStationItem.setIcon(0,
                                            QIcon(os.path.join(basedir,
                                                  'icons/eye-24.png')))
             self.initPlot()
         else:
-            self._qTreeStationItem.setIcon(0,
+            self.QStationItem.setIcon(0,
                                            QIcon(os.path.join(basedir,
                                                  'icons/eye-hidden-24.png')))
             self.delPlot()
@@ -352,7 +352,7 @@ class Stations:
         '''
         self.stations.append(Station(stream=st, parent=self))
         self.parent.stationTree.addTopLevelItem(
-            self.stations[-1]._qTreeStationItem)
+            self.stations[-1].QStationItem)
 
     def visibleStations(self):
         '''
@@ -398,9 +398,9 @@ class Stations:
         self.parent.qtGraphLayout.clear()
         # Update QtreeWidget
         for station in self.stations:
-            self.parent.stationTree.takeTopLevelItem(self.parent.stationTree.indexOfTopLevelItem(station._qTreeStationItem))
+            self.parent.stationTree.takeTopLevelItem(self.parent.stationTree.indexOfTopLevelItem(station.QStationItem))
         for station in self.stations:
-            self.parent.stationTree.addTopLevelItem(station._qTreeStationItem)
+            self.parent.stationTree.addTopLevelItem(station.QStationItem)
             station.initPlot()
         self.updateAllPlots()
 
@@ -489,14 +489,15 @@ class Pick:
         self.network, self.station,\
             self.location, self.channel = self.station_id.split('.')
 
-        self._QTreePickItem = QTreeWidgetItem()
-        self._QTreePickItem.setText(1, '%s - %s\n%s'
+        self.QPickItem = QTreeWidgetItem()
+        self.QPickItem.setText(1, '%s - %s\n%s'
                                     % (self.phase.name,
                                        self.station_id, self.time))
 
-        self._QTreePickItem.setFont(1, QFont('', 8))
-        self._QTreePickItem.setBackground(1, QBrush(self.phase.qcolor))
-        self.event._QTreeEventItem.addChild(self._QTreePickItem)
+        self.QPickItem.setFont(1, QFont('', 8))
+        self.QPickItem.setBackground(1, QBrush(self.phase.qcolor))
+        #self.event.QEventItem.addChild(self.QPickItem)
+        self.event.getStationItem(self.station).addChild(self.QPickItem)
 
     def getPickLineItem(self, channel):
         '''
@@ -520,11 +521,11 @@ class Pick:
         if self.pickHighlighted:
             self.pickLineItem.setPen(color=self.phase.color, width=1)
             self.pickHighlighted = False
-            self._QTreePickItem.setFont(1, QFont('', 8, QFont.Normal))
+            self.QPickItem.setFont(1, QFont('', 8, QFont.Normal))
         else:
             self.pickLineItem.setPen(color=self.phase.color, width=3)
             self.pickHighlighted = True
-            self._QTreePickItem.setFont(1, QFont('', 8, QFont.Bold))
+            self.QPickItem.setFont(1, QFont('', 8, QFont.Bold))
 
     def asDict(self):
         '''
@@ -546,7 +547,7 @@ class Pick:
         pass
 
     def __del__(self):
-        self.event._QTreeEventItem.removeChild(self._QTreePickItem)
+        self.event.getStationItem(self.station).removeChild(self.QPickItem)
         self.pickLineItem.getViewBox().removeItem(self.pickLineItem)
         self.pickLineItem = None
 
@@ -568,9 +569,28 @@ class Event:
         self.id = id
         self.picks = []
 
-        self._QTreeEventItem = QTreeWidgetItem()
-        self._QTreeEventItem.setText(0, 'ID %d' % self.id)
+        self.QEventItem = QTreeWidgetItem()
+        self.QEventItem.setText(0, 'Ev %d' % self.id)
+        self._initQStationItems()
         self._updateItemText()
+
+    def _initQStationItems(self):
+        self.QStationEventItems = {}
+        for station in [station.stats.station for
+                        station in self.parent.parent.stations]:
+            self.QStationEventItems[station] = QTreeWidgetItem()
+            self.QStationEventItems[station].setText(0, station)
+            self.QStationEventItems[station].setHidden(True)
+            self.QEventItem.addChild(self.QStationEventItems[station])
+
+    def getStationItem(self, station):
+        if self.QStationEventItems.has_key(station):
+            return self.QStationEventItems.get(station)
+        else:
+            self.QStationEventItems[station] = QTreeWidgetItem()
+            self.QEventItem.addChild(self.QStationEventItems[station])
+            self.QStationEventItems[station].setHidden(True)
+            return self.QStationEventItems.get(station)
 
     def addPickToEvent(self, pickevt):
         '''
@@ -586,12 +606,12 @@ class Event:
         '''
         if active:
             self.active = True
-            self._QTreeEventItem.setFont(0, QFont('', 10, QFont.Bold))
-            self._QTreeEventItem.setFont(1, QFont('', 10, QFont.Bold))
+            self.QEventItem.setFont(0, QFont('', 10, QFont.Bold))
+            self.QEventItem.setFont(1, QFont('', 10, QFont.Bold))
         else:
             self.active = False
-            self._QTreeEventItem.setFont(0, QFont('', 10, QFont.Normal))
-            self._QTreeEventItem.setFont(1, QFont('', 10, QFont.Normal))
+            self.QEventItem.setFont(0, QFont('', 10, QFont.Normal))
+            self.QEventItem.setFont(1, QFont('', 10, QFont.Normal))
         return self
 
     def deletePick(self, pick):
@@ -612,11 +632,34 @@ class Event:
             picks[-1]['event_id'] = self.id
         return picks
 
+    def _getPickedStations(self):
+        return [pick.station for pick in self.picks]
+
+    def _getPicksForStation(self, station):
+        return [pick for pick in self.picks if pick.station is station]
+
+    def _updateQStationEventItems(self):
+        '''
+        Updates the Event Stations QTreeWidgetItems
+        '''
+        picked_stations = self._getPickedStations()
+        for station, item in self.QStationEventItems.iteritems():
+            npicks = picked_stations.count(station)
+            p_text = ('Pick' if  npicks == 1 else 'Picks')
+            item.setText(1, '%d %s' % (npicks, p_text))
+            if station in picked_stations:
+                item.setHidden(False)
+            else:
+                item.setHidden(True)
+
     def _updateItemText(self):
         '''
         Updates the text of QTreeWidgetItem
         '''
-        self._QTreeEventItem.setText(1, '%d Picks' % len(self.picks))
+        self.QEventItem.setText(1, '%d Stations'
+                                     % len(set([pick.station for
+                                                pick in self.picks])))
+        self._updateQStationEventItems()
 
     def __del__(self):
         for pick in self.picks:
@@ -646,7 +689,7 @@ class Events:
             id = len(self.events)+1
         self.events.append(Event(parent=self, id=id))
         self.setActiveEvent(self.events[-1])
-        self.parent.eventTree.addTopLevelItem(self.events[-1]._QTreeEventItem)
+        self.parent.eventTree.addTopLevelItem(self.events[-1].QEventItem)
 
     def getEvent(self, id):
         '''
@@ -671,7 +714,7 @@ class Events:
         '''
         :event: Event() to be deleted from container object
         '''
-        _id = self.parent.eventTree.indexOfTopLevelItem(event._QTreeEventItem)
+        _id = self.parent.eventTree.indexOfTopLevelItem(event.QEventItem)
         self.parent.eventTree.takeTopLevelItem(_id)
         self.events.remove(event)
         event.__del__()
@@ -692,7 +735,7 @@ class Events:
         if self.active_event is None:
             return
         _p = self.active_event.addPickToEvent(pickevt)
-        self.parent.eventTree.scrollToItem(_p._QTreePickItem)
+        self.parent.eventTree.scrollToItem(_p.QPickItem)
 
     '''
     File IO for the event class

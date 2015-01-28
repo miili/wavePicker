@@ -15,7 +15,8 @@ pickButtonMap = {
 
 
 class wavePicker(mainWindow.Ui_MainWindow, QMainWindow):
-    def __init__(self, stream=None, nplots=5, parent=None):
+    def __init__(self, stream=None, nplots=5,
+                 project_name='Untitled', parent=None):
         '''
         Init the Application and set up the GUI
         '''
@@ -37,6 +38,9 @@ class wavePicker(mainWindow.Ui_MainWindow, QMainWindow):
         self.nplots = nplots               # init gui with 5 traces
         self.visibleChannel = 'Z'     # init with channel z
         self.activePicker = pickP()   # init with P picker
+        self.project_name = project_name
+
+        self.setWindowTitle('wavePicker - %s' % self.project_name)
 
         '''
         Init internal objects
@@ -101,7 +105,7 @@ class wavePicker(mainWindow.Ui_MainWindow, QMainWindow):
         Change selected stations visibility
         '''
         for station in self.stations:
-            if station._qTreeStationItem.isSelected():
+            if station.QStationItem.isSelected():
                 station.setVisible(not station.visible)
 
     def _changeSelectedChannel(self):
@@ -130,7 +134,7 @@ class wavePicker(mainWindow.Ui_MainWindow, QMainWindow):
     def _highlightPick(self):
         picks = self.events.getAllPicks()
         for pick in picks:
-            if pick._QTreePickItem.isSelected():
+            if pick.QPickItem.isSelected():
                 pick.highlightPickLineItem()
 
     def _connectFileMenu(self):
@@ -141,17 +145,19 @@ class wavePicker(mainWindow.Ui_MainWindow, QMainWindow):
         self.actionLoad_JSON.triggered.connect(self._picksLoadJSON)
         self.actionExport_CSV.triggered.connect(self._picksExportCSV)
         self.actionExport_stat.triggered.connect(self._stationsExportSta)
+        self.actionExport_phs.triggered.connect(self._eventsExportPhs)
 
     def _picksSaveJSON(self):
         '''
         Open file dialog and save JSON
         '''
         filename = QFileDialog.getSaveFileName(self, 'Save JSON',
-                                               filter='JSON File (*.json)')
-        if filename[0] is not u'':
-            if filename[0][-5:].lower() is not '.json':
-                filename[0] += '.json'
-            self.events.exportJSON(filename[0])
+                                               self.project_name,
+                                               filter='JSON File (*.json)')[0]
+        if filename is not u'':
+            if filename[-5:].lower() != '.json':
+                filename += '.json'
+            self.events.exportJSON(filename)
 
     def _picksLoadJSON(self):
         '''
@@ -169,10 +175,10 @@ class wavePicker(mainWindow.Ui_MainWindow, QMainWindow):
         '''
         Open file dialog and save CSV
         '''
-        filename = QFileDialog.getSaveFileName(self, 'Save CSV',
+        filename = QFileDialog.getSaveFileName(self, 'Save CSV', self.project_name,
                                                  filter='CSV File (*.csv)')[0]
         if filename is not u'':
-            if filename[-4:].lower() is not '.csv':
+            if filename[-4:].lower() != '.csv':
                 filename += '.csv'
             self.events.exportCSV(filename)
 
@@ -181,11 +187,24 @@ class wavePicker(mainWindow.Ui_MainWindow, QMainWindow):
         Open file dialog and save Hypoinverse Stat file
         '''
         filename = QFileDialog.getSaveFileName(self,'Save Hypoinverse2000 Station File',
+                                               self.project_name,
                                                filter='STA File (*.sta)')[0]
         if filename is not u'':
-            if filename[-4:].lower() is not '.sta':
+            if filename[-4:].lower() != '.sta':
                 filename += '.sta'
             self.stations.exportHypStaFile(filename)
+
+    def _eventsExportPhs(self):
+        '''
+        Open file dialog and save Hypoinverse Stat file
+        '''
+        filename = QFileDialog.getSaveFileName(self,'Save Hypoinverse2000 Phase File',
+                                               self.project_name,
+                                               filter='PHS File (*.phs)')[0]
+        if filename is not u'':
+            if filename[-4:].lower() != '.phs':
+                filename += '.phs'
+            self.events.exportAllEventsPhases(filename)
 
     '''
     Picking Functions
@@ -216,11 +235,11 @@ class wavePicker(mainWindow.Ui_MainWindow, QMainWindow):
         Called when the delete Item button is triggered
         '''
         for event in self.events:
-            if event._QTreeEventItem.isSelected():
+            if event.QEventItem.isSelected():
                 self.events.deleteEvent(event)
                 continue
             for pick in event.picks:
-                if pick._QTreePickItem.isSelected():
+                if pick.QPickItem.isSelected():
                     event.deletePick(pick)
                     continue
 
@@ -292,6 +311,8 @@ class wavePicker(mainWindow.Ui_MainWindow, QMainWindow):
             }
             self.filterButton.setText('Filter Off')
         else:
+            if self.filterArgs is None:
+                return
             self.filterArgs = None
             self.filterButton.setText('Filter On')
         for station in self.stations:

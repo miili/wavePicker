@@ -1,11 +1,12 @@
 from PySide.QtGui import *
 from PySide.QtCore import *
 
-from obspy.core import UTCDateTime, Stream, AttribDict
+from obspy.core import UTCDateTime, AttribDict, Stream
 
 import pyqtgraph as pg
 
-import os, sip
+import os
+
 
 class Channel(object):
     '''
@@ -27,11 +28,11 @@ class Channel(object):
 
         self.QChannelItem = QTreeWidgetItem()
         self.QChannelItem.setText(1, '%s @ %d Hz' %
-                                         (self.tr.stats.channel,
-                                          1./self.tr.stats.delta))
+                                  (self.tr.stats.channel,
+                                   1./self.tr.stats.delta))
         self.QChannelItem.setText(2, '%s\n%s' %
-                                         (self.tr.stats.starttime,
-                                          self.tr.stats.endtime))
+                                  (self.tr.stats.starttime,
+                                   self.tr.stats.endtime))
         self.QChannelItem.setFont(1, QFont('', 7))
         self.QChannelItem.setFont(2, QFont('', 7))
         self.station.QStationItem.addChild(self.QChannelItem)
@@ -58,7 +59,10 @@ class Channel(object):
         _currentPlotItems = self.station.plotItem.getViewBox().allChildren()
         for pick in self.station.getPicks():
             if pick not in _currentPlotItems:
-                self.station.plotItem.addItem(pick.getPickLineItem(self))
+                try:
+                    self.station.plotItem.addItem(pick.getPickLineItem(self))
+                except:
+                    self.station.plotItem.addItem(pick.getPickLineItem(self, forceNew=True))
 
     def initTracePlot(self):
         '''
@@ -123,8 +127,8 @@ class Station(object):
 
         self.QStationItem = QTreeWidgetItem()
         self.QStationItem.setText(1, '%s.%s' %
-                                      (self.stats.network,
-                                       self.stats.station))
+                                  (self.stats.network,
+                                   self.stats.station))
         #self.QStationItem.setText(2, '%.3f N, %.3f E' %
         #                              (self.getCoordinates()[0],
         #                               self.getCoordinates()[1]))
@@ -147,13 +151,13 @@ class Station(object):
         self.visible = visible
         if visible:
             self.QStationItem.setIcon(0,
-                                           QIcon(os.path.join(basedir,
-                                                 'icons/eye-24.png')))
+                                      QIcon(os.path.join(basedir,
+                                            'icons/eye-24.png')))
             self.initPlot()
         else:
             self.QStationItem.setIcon(0,
-                                           QIcon(os.path.join(basedir,
-                                                 'icons/eye-hidden-24.png')))
+                                      QIcon(os.path.join(basedir,
+                                            'icons/eye-hidden-24.png')))
             self.delPlot()
 
     def initPlot(self):
@@ -282,12 +286,12 @@ class Station(object):
         rstr += '%1s' % str(hyp_sta.get('station_weight', 'f'))
         # Latitude in deg/min
         rstr += '%2d %7.4f%s' % (int(abs(hyp_sta['station_lat'])),
-                               ((abs(hyp_sta['station_lat']) % 1) * 60),
-                                'N' if hyp_sta['station_lat'] > 0 else 'S')
+                                 ((abs(hyp_sta['station_lat']) % 1) * 60),
+                                 'N' if hyp_sta['station_lat'] > 0 else 'S')
         # Longitude in deg/min
         rstr += '%3d %7.4f%s' % (int(abs(hyp_sta['station_lon'])),
-                               ((abs(hyp_sta['station_lon']) % 1) * 60),
-                                'E' if hyp_sta['station_lon'] > 0 else 'W')
+                                 ((abs(hyp_sta['station_lon']) % 1) * 60),
+                                 'E' if hyp_sta['station_lon'] > 0 else 'W')
         # Station elevation
         rstr += '%4d' % hyp_sta.get('station_elevation', 0)
         # Default period in sec
@@ -322,6 +326,7 @@ class Station(object):
         print rstr
         print len(rstr)+1
         return rstr
+
 
 class Stations:
     '''
@@ -487,25 +492,25 @@ class Pick:
         self.pickHighlighted = False
 
         self.network, self.station,\
-            self.location, self.channel = self.station_id.split('.')
+            self.location, self.component = self.station_id.split('.')
 
         self.QPickItem = QTreeWidgetItem()
         self.QPickItem.setText(1, '%s - %s\n%s'
-                                    % (self.phase.name,
-                                       self.station_id, self.time))
+                               % (self.phase.name,
+                                  self.station_id, self.time))
 
         self.QPickItem.setFont(1, QFont('', 8))
         self.QPickItem.setBackground(1, QBrush(self.phase.qcolor))
         #self.event.QEventItem.addChild(self.QPickItem)
         self.event.getStationItem(self.station).addChild(self.QPickItem)
 
-    def getPickLineItem(self, channel):
+    def getPickLineItem(self, channel, forceNew=False):
         '''
         Function returns an pyqtgraph.InfiniteLine
         for plotting through Channel()
         '''
         self.channel = channel
-        if self.pickLineItem is not None:
+        if self.pickLineItem is not None and not forceNew:
             return self.pickLineItem
         self.pickLineItem = pg.InfiniteLine()
         pos = (self.time - channel.tr.stats.starttime) / channel.tr.stats.delta
@@ -548,7 +553,10 @@ class Pick:
 
     def __del__(self):
         self.event.getStationItem(self.station).removeChild(self.QPickItem)
-        self.pickLineItem.getViewBox().removeItem(self.pickLineItem)
+        try:
+            self.pickLineItem.getViewBox().removeItem(self.pickLineItem)
+        except:
+            pass
         self.pickLineItem = None
 
 
@@ -584,7 +592,7 @@ class Event:
             self.QEventItem.addChild(self.QStationEventItems[station])
 
     def getStationItem(self, station):
-        if self.QStationEventItems.has_key(station):
+        if station in self.QStationEventItems:
             return self.QStationEventItems.get(station)
         else:
             self.QStationEventItems[station] = QTreeWidgetItem()
@@ -596,6 +604,12 @@ class Event:
         '''
         Adds a pick to the events
         '''
+        # Check if station already has P or S Pick
+        station_picks = self._getPicksForStation(pickevt['station_id'].split('.')[1])
+        for pick in station_picks:
+            if pick.phase is pickevt['phase']:
+                self.deletePick(pick)
+        # Add pick to event
         self.picks.append(Pick(self, pickevt))
         self._updateItemText()
         return self.picks[-1]
@@ -635,8 +649,8 @@ class Event:
     def _getPickedStations(self):
         return [pick.station for pick in self.picks]
 
-    def _getPicksForStation(self, station):
-        return [pick for pick in self.picks if pick.station is station]
+    def _getPicksForStation(self, station_id):
+        return [pick for pick in self.picks if pick.station == station_id]
 
     def _updateQStationEventItems(self):
         '''
@@ -645,7 +659,7 @@ class Event:
         picked_stations = self._getPickedStations()
         for station, item in self.QStationEventItems.iteritems():
             npicks = picked_stations.count(station)
-            p_text = ('Pick' if  npicks == 1 else 'Picks')
+            p_text = ('Pick' if npicks == 1 else 'Picks')
             item.setText(1, '%d %s' % (npicks, p_text))
             if station in picked_stations:
                 item.setHidden(False)
@@ -657,9 +671,71 @@ class Event:
         Updates the text of QTreeWidgetItem
         '''
         self.QEventItem.setText(1, '%d Stations'
-                                     % len(set([pick.station for
-                                                pick in self.picks])))
+                                % len(set([pick.station for
+                                      pick in self.picks])))
         self._updateQStationEventItems()
+
+    def getHypPhasesForStation(self, station_id):
+        '''
+        Returns this station_id's Hypoinverse2000 string in Y2000 Archive format
+        Hyp2000 Documentation P 114
+        '''
+        picks = self._getPicksForStation(station_id)
+        p_pick = None
+        s_pick = None
+        for pick in picks:
+            if pick.phase.name == 'P':
+                p_pick = pick
+            elif pick.phase.name == 'S':
+                s_pick = pick
+        if p_pick is None:
+            return
+        # General information
+        rstr = '%-5s' % p_pick.station
+        rstr += '%2s ' % p_pick.network
+        rstr += '%1s' % p_pick.component[-1]
+        rstr += '%3s ' % p_pick.component
+        rstr += 'IP'
+        # P-First motion
+        rstr += '%1s' % ('U' if p_pick.amplitude > 0 else 'D')
+        # P Weight code
+        rstr += '1'
+        # Time and day
+        rstr += '%4d' % p_pick.time.year
+        rstr += '%2d%2d%2d%2d' % (p_pick.time.month, p_pick.time.day,
+                                  p_pick.time.hour, p_pick.time.minute)
+        # Second of P Arrival
+        rstr += '%5.2f' % (p_pick.time.second + p_pick.time.microsecond*1e-6)
+        # P Travel time residual (blank)
+        rstr += '%4s' % ''
+        # P weight actually used (blank)
+        rstr += '%3s' % ''
+        # S Wave Arrival
+        if s_pick is None:
+            # Make S arrival blank
+            rstr += '%13s' % ''
+        else:
+            _sdiff = s_pick.time - p_pick.time
+            # Second of S Arrival
+            rstr += '%5.2f' % (_sdiff)
+            rstr += 'ES '
+            # Weight code
+            rstr += '1'
+            # S Travel Time residual (blank)
+            rstr += '%4s' % ''
+        # Amplitude Stuff
+        # Amplitude Peak to Peak
+        rstr += '%7s' % ''
+        # Amp unit
+        rstr += '%2s' % ''
+
+        return '%-121s' % rstr
+
+    def exportEventPhases(self):
+        export_picks = []
+        for station in set(self._getPickedStations()):
+            export_picks.append(self.getHypPhasesForStation(station))
+        return '\n'.join(export_picks)
 
     def __del__(self):
         for pick in self.picks:
@@ -782,7 +858,7 @@ class Events:
                     pick['phase'] = eval('pick%s()' % pick['phase'].upper())
                 except:
                     raise ValueError('Could not import Phase %s in file %s'
-                               % (pick['phase'], filename))
+                                     % (pick['phase'], filename))
                 pick['time'] = UTCDateTime(pick['time'])
                 pick['amplitude'] = float(pick['amplitude'])
                 pick['event_id'] = int(pick['event_id'])
@@ -793,6 +869,12 @@ class Events:
         for pick in events_json:
             self.getEvent(pick['event_id']).addPickToEvent(pick)
 
+    def exportAllEventsPhases(self, filename):
+        with file(filename, 'w') as phs_file:
+            for event in self.events:
+                phs_file.write(event.exportEventPhases())
+                phs_file.write('\n')
+
     def __iter__(self):
         return iter(self.events)
 
@@ -802,6 +884,8 @@ class Events:
 '''
 Different picks and their colors
 '''
+
+
 class pickP:
     def __init__(self):
         self.name = 'P'

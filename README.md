@@ -1,7 +1,9 @@
 # wavePicker
 A Seismic Wave Time Arrival Picker for ObsPy Stream Objects
 
-This library aims to be a useful picker for obspy.core.Stream objects.
+This library aims to be a useful picker for `obspy.core.Stream` objects.
+
+**This Project is not supported anymore, see http://pyrocko.org Snuffler for seismic data inspection and picking!**
 
 wavePicker utilizes the following libraries:
 * ObsPy
